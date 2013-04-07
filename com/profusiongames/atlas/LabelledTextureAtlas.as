@@ -3,12 +3,12 @@
 	import starling.textures.TextureAtlas;
 	import starling.textures.Texture;
 	
-	public class labelledTextureAtlas extends TextureAtlas
+	public class LabelledTextureAtlas extends TextureAtlas
 	{
 		public var mFrameLabels:Object = {};
 		public var mPivotPoints:Object = {};
 		
-		public function labelledTextureAtlas(texture:Texture, XMLl:XML = null)
+		public function LabelledTextureAtlas(texture:Texture, XMLl:XML = null)
 		{
 			super(texture, XMLl);
 		}

@@ -51,7 +51,7 @@
 		private var isDrawing:Boolean = false;
 		private var pivotPoint:Point;
 		
-		public static function cacheMovieClipData(Assetss:Object, atlas:LabelledTextureAtlas, clipName:String, labels:Array = null, cacheLabel:String = null)
+		public static function cacheMovieClipData(Assetss:Object, atlas:LabelledTextureAtlas, clipName:String, labels:Array = null, cacheLabel:String = null):void
 		{
 			
 			var allFrames:Vector.<Texture> = new Vector.<Texture>;
@@ -112,7 +112,7 @@
 			var baseStr:String = base.toFixed(0);
 			var numberStr:String = number.toFixed(0);
 			var fix:String = numberStr;
-			for (var char = numberStr.length; char < baseStr.length; char++)
+			for (var char:int = numberStr.length; char < baseStr.length; char++)
 			{
 				fix = "0" + fix;
 			}
@@ -122,13 +122,13 @@
 		
 		public static function createTextureAtlas(drawdataNames:Array, staged:MovieClip, debug:Boolean = false):LabelledTextureAtlas
 		{
-			var drawDatas:Vector.<drawData> = new Vector.<DrawData>;
+			var drawDatas:Vector.<DrawData> = new Vector.<DrawData>;
 			for (var d:int = 0; d < drawdataNames.length; d++)
 			{
 				var clipName:String = drawdataNames[d];
-				for (var v:int = 0; v < drawData.completedDrawingList.length; v++)
+				for (var v:int = 0; v < DrawData.completedDrawingList.length; v++)
 				{
-					var drawDatat:DrawData = drawData.completedDrawingList[v];
+					var drawDatat:DrawData = DrawData.completedDrawingList[v];
 					if (drawDatat.clipName == clipName)
 					{
 						drawDatas.push(drawDatat);
@@ -155,20 +155,20 @@
 				{
 					
 					var currentDrawData:DrawData = drawDatas[c];
-					var bitmapDatas:Vector.<BitmapData> = currentDrawData.bitmapDatas;
+					var currentBitmapDatas:Vector.<BitmapData> = Vector.<BitmapData>(currentDrawData.bitmapDatas);
 					var currentlabelArray:Array = [];
 					labell[currentDrawData.clipName] = currentlabelArray;
 					var nearest10:int = 10;
-					while (nearest10 < bitmapDatas.length)
+					while (nearest10 < currentBitmapDatas.length)
 					{
 						nearest10 *= 10;
 					}
 					var prevLabel:String = "";
 					var prevLabelIndex:uint = 0;
-					for (var b:int = 0; b < bitmapDatas.length; b++)
+					for (var b:int = 0; b < currentBitmapDatas.length; b++)
 					{
 						
-						var currentBitmapData:BitmapData = bitmapDatas[b];
+						var currentBitmapData:BitmapData = currentBitmapDatas[b];
 						if (drawX + currentBitmapData.width > spriteSheet.width)
 						{
 							drawX = 0;
@@ -177,7 +177,7 @@
 							if (drawY > spriteSheetSize)
 							{
 								spriteSheetSize *= 2;
-								trace("too large for current SPrite SHeet, size x2");
+								trace("too large for current Sprite Sheet, size x2");
 								if (spriteSheetSize > 2048)
 								{
 									throw(new Error("Max Texture Size Exceeded"));
@@ -192,7 +192,7 @@
 						var bitmapDataRect:Rectangle = new Rectangle(drawX, drawY, currentBitmapData.width, currentBitmapData.height);
 						rectangles[currentBitmapData] = bitmapDataRect;
 						
-						//var prefix:String=drawData.addLeadingZeros(nearest10,b);
+						//var prefix:String=DrawData.addLeadingZeros(nearest10,b);
 						if (currentDrawData.labels[b] != null && currentDrawData.labels[b] != prevLabel)
 						{
 							prevLabel = currentDrawData.labels[b];
@@ -231,7 +231,7 @@
 				var sprite:MovieClip = new MovieClip();
 				sprite.addChild(showBitMap);
 				//draw rectangles
-				for (var bit in rectangles)
+				for (var bit:String in rectangles)
 				{
 					var rectt:Rectangle = rectangles[bit];
 					var shape:Shape = new Shape();
@@ -252,8 +252,8 @@
 					
 				}
 				
-				sprite.scaleX = drawData.spriteScale;
-				sprite.scaleY = drawData.spriteScale;
+				sprite.scaleX = DrawData.spriteScale;
+				sprite.scaleY = DrawData.spriteScale;
 				sprite.x = 0;
 				sprite.y = 0;
 				//display the final bitmap;
@@ -268,13 +268,13 @@
 				fileR.save(byteData, "spritesheet.png");
 				//staged.addChild(sprite);
 				sprite.timer = 0;
-				sprite.addEventListener(Event.ENTER_FRAME, drawData.spriteAdvance);
+				sprite.addEventListener(Event.ENTER_FRAME, DrawData.spriteAdvance);
 			}
 			//create the atlas.
 			var texture:Texture = Texture.fromBitmapData(spriteSheet, false);
-			var textureAtlas:labelledTextureAtlas = new labelledTextureAtlas(texture);
+			var textureAtlas:LabelledTextureAtlas = new LabelledTextureAtlas(texture);
 			textureAtlas.mFrameLabels = labell;
-			for (var bit2 in rectangles)
+			for (var bit2:String in rectangles)
 			{
 				var rectBit:Rectangle = rectangles[bit2];
 				var namet:String = names[bit2];
@@ -287,7 +287,7 @@
 		{
 			var sprite:MovieClip = MovieClip(evt.currentTarget);
 			sprite.timer++;
-			if (sprite.timer > drawData.showSpriteFrames)
+			if (sprite.timer > DrawData.showSpriteFrames)
 			{
 				sprite.parent.removeChild(sprite);
 				sprite.removeEventListener(Event.ENTER_FRAME, arguments.callee);
@@ -296,9 +296,9 @@
 		
 		public static function beginBatchDraw(evt:Event, drawList:Array, staged:MovieClip = null):void
 		{
-			drawData.toDrawList = drawList.concat();
-			drawData.currentlyDrawingList = new Vector.<drawData>;
-			/*drawData.currentlyDrawingList.toString=function():String{
+			DrawData.toDrawList = drawList.concat();
+			DrawData.currentlyDrawingList = new Vector.<DrawData>;
+			/*DrawData.currentlyDrawingList.toString=function():String{
 			   var str="";
 			   for(var i:int=0;i<this.length;i++){
 			   str+=this[i].clipName;
@@ -306,86 +306,86 @@
 			   }
 			   return str;
 			 }*/
-			drawData.completedDrawingList = new Vector.<drawData>;
-			drawData.staged = staged;
-			if (drawData.debugMode)
+			DrawData.completedDrawingList = new Vector.<DrawData>;
+			DrawData.staged = staged;
+			if (DrawData.debugMode)
 			{
-				drawData.spriteDrawHeadX = 0;
-				drawData.spriteDrawHeadY = 0;
-				//drawData.currentHeight=0;
-				drawData.sprite = new Sprite();
-				drawData.sprite.scaleX = drawData.spriteScale;
-				drawData.sprite.scaleY = drawData.spriteScale;
-				drawData.sprite.x = drawData.spriteX;
-				drawData.sprite.y = drawData.spriteY;
-				staged.addChild(drawData.sprite);
+				DrawData.spriteDrawHeadX = 0;
+				DrawData.spriteDrawHeadY = 0;
+				//DrawData.currentHeight=0;
+				DrawData.sprite = new Sprite();
+				DrawData.sprite.scaleX = DrawData.spriteScale;
+				DrawData.sprite.scaleY = DrawData.spriteScale;
+				DrawData.sprite.x = DrawData.spriteX;
+				DrawData.sprite.y = DrawData.spriteY;
+				staged.addChild(DrawData.sprite);
 				
 			}
-			while (drawData.currentlyDrawingList.length < drawData.batchLimit && drawData.toDrawList.length > 0)
+			while (DrawData.currentlyDrawingList.length < DrawData.batchLimit && DrawData.toDrawList.length > 0)
 			{
-				drawData.addDrawElement();
+				DrawData.addDrawElement();
 				trace("add Element");
 			}
-			if (!drawData.batchDrawInProgress)
+			if (!DrawData.batchDrawInProgress)
 			{
-				drawData.staged.addEventListener(Event.ENTER_FRAME, drawData.enterFrame);
-				drawData.staged.addEventListener(Event.EXIT_FRAME, drawData.exitFrame);
+				DrawData.staged.addEventListener(Event.ENTER_FRAME, DrawData.enterFrame);
+				DrawData.staged.addEventListener(Event.EXIT_FRAME, DrawData.exitFrame);
 			}
 		}
 		
 		private static function onDrawComplete(completed:DrawData):void
 		{
 			trace(completed.clipName + "complete");
-			var index:int = drawData.currentlyDrawingList.indexOf(completed);
-			drawData.currentlyDrawingList.splice(index, 1);
-			trace(drawData.currentlyDrawingList);
-			if (drawData.currentlyDrawingList.length <= 0 && drawData.toDrawList.length <= 0)
+			var index:int = DrawData.currentlyDrawingList.indexOf(completed);
+			DrawData.currentlyDrawingList.splice(index, 1);
+			trace(DrawData.currentlyDrawingList);
+			if (DrawData.currentlyDrawingList.length <= 0 && DrawData.toDrawList.length <= 0)
 			{
-				if (drawData.debugMode)
+				if (DrawData.debugMode)
 				{
-					drawData.staged.removeChild(drawData.sprite);
+					DrawData.staged.removeChild(DrawData.sprite);
 				}
-				drawData.staged.dispatchEvent(new DrawEvent(DrawEvent.BATCH_COMPLETE, drawData.completedDrawingList));
+				DrawData.staged.dispatchEvent(new DrawEvent(DrawEvent.BATCH_COMPLETE, DrawData.completedDrawingList));
 				//Game.game.initGame();
-				drawData.batchDrawInProgress = false;
-				drawData.staged.removeEventListener(Event.ENTER_FRAME, drawData.enterFrame);
-				drawData.staged.removeEventListener(Event.EXIT_FRAME, drawData.exitFrame);
+				DrawData.batchDrawInProgress = false;
+				DrawData.staged.removeEventListener(Event.ENTER_FRAME, DrawData.enterFrame);
+				DrawData.staged.removeEventListener(Event.EXIT_FRAME, DrawData.exitFrame);
 				trace("allDrawComplete");
 			}
 			else
 			{
-				drawData.addDrawElement();
+				DrawData.addDrawElement();
 			}
 		}
 		
 		private static function addDrawElement():void
 		{
-			if (drawData.toDrawList.length > 0)
+			if (DrawData.toDrawList.length > 0)
 			{
-				var ele:* = drawData.toDrawList.pop();
+				var ele:* = DrawData.toDrawList.pop();
 				if (ele is flash.display.MovieClip)
 				{
-					var Ddata:DrawData = new drawData(null, null, ele);
+					var Ddata:DrawData = new DrawData(null, null, ele);
 				}
 				else if (ele is FunctionData)
 				{
-					var Ddata:DrawData = new drawData(null, ele, null);
+					var Ddata2:DrawData = new DrawData(null, ele, null);
 				}
 				else if (ele is String)
 				{
-					var Ddata:DrawData = new drawData(ele, null, null);
+					var Ddata3:DrawData = new DrawData(ele, null, null);
 				}
 				
-				trace(drawData.currentlyDrawingList);
+				trace(DrawData.currentlyDrawingList);
 			}
 		}
 		
 		private static function enterFrame(evt:Event):void
 		{
 			trace("ENTER_FRAME");
-			for (var d:int = 0; d < drawData.currentlyDrawingList.length; d++)
+			for (var d:int = 0; d < DrawData.currentlyDrawingList.length; d++)
 			{
-				var dawData:DrawData = drawData.currentlyDrawingList[d];
+				var dawData:DrawData = DrawData.currentlyDrawingList[d];
 				if (dawData.isDrawing)
 				{
 					dawData.advanceFrame(null);
@@ -396,9 +396,9 @@
 		private static function exitFrame(evt:Event):void
 		{
 			trace("EXIT_FRAME");
-			for (var d:int = 0; d < drawData.currentlyDrawingList.length; d++)
+			for (var d:int = 0; d < DrawData.currentlyDrawingList.length; d++)
 			{
-				var dawData:DrawData = drawData.currentlyDrawingList[d];
+				var dawData:DrawData = DrawData.currentlyDrawingList[d];
 				if (dawData.isDrawing)
 				{
 					dawData.iterateDrawFrame(null);
@@ -410,10 +410,10 @@
 			}
 		}
 		
-		public function drawData(clipName:String, clip:* = null, functiondata:FunctionData = null):void
+		public function DrawData(clipName:String, clip:* = null, functiondata:FunctionData = null):void
 		{
-			trace("drawData(" + clipName + "," + clip + "," + color + ");");
-			drawData.currentlyDrawingList.push(this);
+			//trace("DrawData(" + clipName + "," + clip + "," + color + ");");
+			DrawData.currentlyDrawingList.push(this);
 			//this.labels=new Array;
 			if (clipName != null)
 			{
@@ -435,17 +435,17 @@
 			this.labels = [];
 			this.beginGetBoundingBox();
 			trace(this.clipName + " boundingbox:" + this.rect);
-			if (drawData.debugMode)
+			if (DrawData.debugMode)
 			{
 				
-				drawData.staged.addChild(this.clip);
-				this.clip.x = 100 * drawData.currentlyDrawingList.indexOf(this);
+				DrawData.staged.addChild(this.clip);
+				this.clip.x = 100 * DrawData.currentlyDrawingList.indexOf(this);
 				this.clip.y = 100;
-					//this.currentY=drawData.currentHeight;
-					//drawData.currentHeight+=this.rect.height;
+					//this.currentY=DrawData.currentHeight;
+					//DrawData.currentHeight+=this.rect.height;
 			}
-			//drawData.staged.addEventListener(Event.ENTER_FRAME,advanceFrame);
-			//drawData.staged.addEventListener(Event.EXIT_FRAME,iterateDrawFrame);
+			//DrawData.staged.addEventListener(Event.ENTER_FRAME,advanceFrame);
+			//DrawData.staged.addEventListener(Event.EXIT_FRAME,iterateDrawFrame);
 			this.currentFrame = 1;
 			this.clip.gotoAndPlay(this.currentFrame);
 		
@@ -542,30 +542,30 @@
 			
 			this.bitmapDatas[clip.currentFrame - 1] = bitmapData;
 			//trace("addBitmapData");
-			if (drawData.debugMode)
+			if (DrawData.debugMode)
 			{
 				var bitmap:Bitmap = new Bitmap(bitmapData);
-				drawData.spriteDrawHeadX += bitmap.width;
-				if (drawData.spriteDrawHeadX > drawData.debugCanvasSize)
+				DrawData.spriteDrawHeadX += bitmap.width;
+				if (DrawData.spriteDrawHeadX > DrawData.debugCanvasSize)
 				{
-					drawData.spriteDrawHeadY += bitmap.height;
-					drawData.spriteDrawHeadX = 0;
+					DrawData.spriteDrawHeadY += bitmap.height;
+					DrawData.spriteDrawHeadX = 0;
 				}
-				bitmap.x = drawData.spriteDrawHeadX;
+				bitmap.x = DrawData.spriteDrawHeadX;
 				
 				//0 + clip.currentFrame * boundingBox.width;
-				bitmap.y = drawData.spriteDrawHeadY;
-				if (drawData.spriteDrawHeadY > drawData.debugCanvasSize)
+				bitmap.y = DrawData.spriteDrawHeadY;
+				if (DrawData.spriteDrawHeadY > DrawData.debugCanvasSize)
 				{
-					drawData.spriteDrawHeadX = 0;
-					drawData.spriteDrawHeadY = 0;
-					while (drawData.sprite.numChildren > 0)
+					DrawData.spriteDrawHeadX = 0;
+					DrawData.spriteDrawHeadY = 0;
+					while (DrawData.sprite.numChildren > 0)
 					{
-						drawData.sprite.removeChildAt(0);
+						DrawData.sprite.removeChildAt(0);
 					}
 				}
 				//this.currentY;
-				drawData.sprite.addChild(bitmap);
+				DrawData.sprite.addChild(bitmap);
 			}
 		}
 		
@@ -578,12 +578,12 @@
 		
 		public function onDrawComplete():void
 		{
-			drawData.completedDrawingList.push(this);
-			if (drawData.debugMode)
+			DrawData.completedDrawingList.push(this);
+			if (DrawData.debugMode)
 			{
-				drawData.staged.removeChild(this.clip);
+				DrawData.staged.removeChild(this.clip);
 			}
-			drawData.staged.dispatchEvent(new DrawEvent(DrawEvent.CLIP_COMPLETE, new <drawData>[this]));
+			DrawData.staged.dispatchEvent(new DrawEvent(DrawEvent.CLIP_COMPLETE, new <DrawData>[this]));
 			//Assetss.createTextureArray(this.clipName,this.bitmapDatas);
 		}
 		
@@ -595,7 +595,7 @@
 			if (this.clip.currentFrame >= this.clip.totalFrames)
 			{
 				this.onDrawComplete();
-				drawData.onDrawComplete(this);
+				DrawData.onDrawComplete(this);
 					//this.clip.removeEventListener(Event.ENTER_FRAME,advanceFrame);
 					//this.clip.removeEventListener(Event.EXIT_FRAME,iterateDrawFrame);
 			}
