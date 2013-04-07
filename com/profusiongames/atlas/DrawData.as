@@ -28,8 +28,8 @@
 		private var rect:Rectangle;
 		public var labels:Array;
 		private static var toDrawList:Array;
-		private static var currentlyDrawingList:Vector.<drawData>;
-		private static var completedDrawingList:Vector.<drawData>
+		private static var currentlyDrawingList:Vector.<DrawData>;
+		private static var completedDrawingList:Vector.<DrawData>
 		public static var batchLimit:uint = 4;
 		public static var debugMode:Boolean = true;
 		private static var sprite:Sprite;
@@ -51,7 +51,7 @@
 		private var isDrawing:Boolean = false;
 		private var pivotPoint:Point;
 		
-		public static function cacheMovieClipData(Assetss:Object, atlas:labelledTextureAtlas, clipName:String, labels:Array = null, cacheLabel:String = null)
+		public static function cacheMovieClipData(Assetss:Object, atlas:LabelledTextureAtlas, clipName:String, labels:Array = null, cacheLabel:String = null)
 		{
 			
 			var allFrames:Vector.<Texture> = new Vector.<Texture>;
@@ -120,15 +120,15 @@
 		
 		}
 		
-		public static function createTextureAtlas(drawdataNames:Array, staged:MovieClip, debug:Boolean = false):labelledTextureAtlas
+		public static function createTextureAtlas(drawdataNames:Array, staged:MovieClip, debug:Boolean = false):LabelledTextureAtlas
 		{
-			var drawDatas:Vector.<drawData> = new Vector.<drawData>;
+			var drawDatas:Vector.<drawData> = new Vector.<DrawData>;
 			for (var d:int = 0; d < drawdataNames.length; d++)
 			{
 				var clipName:String = drawdataNames[d];
 				for (var v:int = 0; v < drawData.completedDrawingList.length; v++)
 				{
-					var drawDatat:drawData = drawData.completedDrawingList[v];
+					var drawDatat:DrawData = drawData.completedDrawingList[v];
 					if (drawDatat.clipName == clipName)
 					{
 						drawDatas.push(drawDatat);
@@ -154,7 +154,7 @@
 				for (var c:int = 0; c < drawDatas.length; c++)
 				{
 					
-					var currentDrawData:drawData = drawDatas[c];
+					var currentDrawData:DrawData = drawDatas[c];
 					var bitmapDatas:Vector.<BitmapData> = currentDrawData.bitmapDatas;
 					var currentlabelArray:Array = [];
 					labell[currentDrawData.clipName] = currentlabelArray;
@@ -333,7 +333,7 @@
 			}
 		}
 		
-		private static function onDrawComplete(completed:drawData):void
+		private static function onDrawComplete(completed:DrawData):void
 		{
 			trace(completed.clipName + "complete");
 			var index:int = drawData.currentlyDrawingList.indexOf(completed);
@@ -365,15 +365,15 @@
 				var ele:* = drawData.toDrawList.pop();
 				if (ele is flash.display.MovieClip)
 				{
-					var Ddata:drawData = new drawData(null, null, ele);
+					var Ddata:DrawData = new drawData(null, null, ele);
 				}
 				else if (ele is FunctionData)
 				{
-					var Ddata:drawData = new drawData(null, ele, null);
+					var Ddata:DrawData = new drawData(null, ele, null);
 				}
 				else if (ele is String)
 				{
-					var Ddata:drawData = new drawData(ele, null, null);
+					var Ddata:DrawData = new drawData(ele, null, null);
 				}
 				
 				trace(drawData.currentlyDrawingList);
@@ -385,7 +385,7 @@
 			trace("ENTER_FRAME");
 			for (var d:int = 0; d < drawData.currentlyDrawingList.length; d++)
 			{
-				var dawData:drawData = drawData.currentlyDrawingList[d];
+				var dawData:DrawData = drawData.currentlyDrawingList[d];
 				if (dawData.isDrawing)
 				{
 					dawData.advanceFrame(null);
@@ -398,7 +398,7 @@
 			trace("EXIT_FRAME");
 			for (var d:int = 0; d < drawData.currentlyDrawingList.length; d++)
 			{
-				var dawData:drawData = drawData.currentlyDrawingList[d];
+				var dawData:DrawData = drawData.currentlyDrawingList[d];
 				if (dawData.isDrawing)
 				{
 					dawData.iterateDrawFrame(null);
@@ -526,43 +526,6 @@
 			this.isDrawing = true;
 			this.drawFrame(this.clip, this.rect);
 		}
-		
-		//DEPRECATED
-		//public function getBoundingBox(clip:MovieClip):Rectangle {
-//			
-//			var minLeft:Number = 100000;
-//			var maxRight:Number = -100000;
-//			var minTop:Number = 100000;
-//			var maxBottom:Number = -100000;
-//			for (var f1:uint=1; f1<=clip.totalFrames; f1++) {
-//				clip.gotoAndStop(f1);
-//				var rect:Rectangle = clip.getBounds(clip);
-//				var left:Number = rect.left;
-//				var right:Number = rect.right;
-//				var top:Number = rect.top;
-//				var bottom:Number = rect.bottom;
-//				if (left<minLeft) {
-//					minLeft = left;
-//				}
-//				if (right>maxRight) {
-//					maxRight = right;
-//				}
-//				if (top<minTop) {
-//					minTop = top;
-//				}
-//				if (bottom>maxBottom) {
-//					maxBottom = bottom;
-//				}
-//			}
-//			var boundingBox:Rectangle = new Rectangle(minLeft,minTop);
-//			boundingBox.right = maxRight;
-//			boundingBox.bottom = maxBottom;
-//			this.boundingBoxBeingEvaluated=false;
-//			this.rect=boundingBox;
-//			trace("finished Bounding box:"+this.clipName);
-//			
-//			return boundingBox;
-//		}
 		
 		public function drawFrame(clip:MovieClip, boundingBox:Rectangle):void
 		{

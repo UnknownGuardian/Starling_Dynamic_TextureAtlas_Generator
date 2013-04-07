@@ -11,7 +11,6 @@
 		public function labelledTextureAtlas(texture:Texture, XMLl:XML = null)
 		{
 			super(texture, XMLl);
-			// constructor code
 		}
 		
 		public function getImageTexture(name:String):Texture

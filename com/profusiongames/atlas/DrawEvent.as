@@ -4,14 +4,13 @@
 	
 	public class DrawEvent extends Event
 	{
-		public var clips:Vector.<drawData>
-		public static const CLIP_COMPLETE:String = "CLIPCOMPLETE";
-		public static const BATCH_COMPLETE:String = "BATCHCOMPLETE";
+		public var clips:Vector.<DrawData>
+		public static const CLIP_COMPLETE:String = "CLIP_COMPLETE";
+		public static const BATCH_COMPLETE:String = "BATCH_COMPLETE";
 		
-		public function DrawEvent(type:String, clips:Vector.<drawData>)
+		public function DrawEvent(type:String, clips:Vector.<DrawData>)
 		{
 			this.clips = clips;
-			// constructor code
 			super(type, false, false);
 		}
 	
